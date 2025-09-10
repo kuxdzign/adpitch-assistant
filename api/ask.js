@@ -6,11 +6,24 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method Not Allowed - use POST' });
   }
 
+  let body = '';
   try {
-    const { question = '', action = 'ask' } = req.body || {};
-    if (!question.trim()) {
-      return res.status(400).json({ error: 'Empty question' });
-    }
+    body = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', chunk => { data += chunk; });
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
+    body = JSON.parse(body);
+  } catch (err) {
+    return res.status(400).json({ error: 'Invalid JSON body', detail: err.message });
+  }
+
+  const { question = '', action = 'ask' } = body;
+  if (!question.trim()) {
+    return res.status(400).json({ error: 'Empty question' });
+  }
+
 
     // --- Simple built-in context (simulating RAG)
     const context = `
