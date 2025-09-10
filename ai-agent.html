@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>AdPitch Assistant — Demo</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:20px;background:#fafafa}
+    .card{max-width:800px;margin:0 auto;padding:20px;border-radius:10px;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+    textarea{width:100%;height:100px;padding:10px;border-radius:8px;border:1px solid #ddd}
+    button{padding:10px 14px;margin-right:8px;border-radius:8px;border:0;background:#0070f3;color:white;cursor:pointer}
+    #output{margin-top:12px;white-space:pre-wrap;background:#f5f7fa;padding:12px;border-radius:8px;border:1px solid #eee;min-height:100px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>AdPitch Assistant (Prototype)</h2>
+    <textarea id="q">Which proposals are pending approval?</textarea>
+    <div>
+      <button id="ask">Ask</button>
+      <button id="summarize">Summarize Proposal</button>
+      <button id="draft">Draft Email</button>
+    </div>
+    <div id="output">Response appears here...</div>
+  </div>
+
+  <script>
+    const apiPath = '/api/ask';
+    async function callAPI(question, action='ask'){
+      document.getElementById('output').innerText = 'Thinking...';
+      try {
+        const res = await fetch(apiPath, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ question, action })
+        });
+        const data = await res.json();
+        document.getElementById('output').innerText = data.answer || data.error || 'No response';
+      } catch (e) {
+        document.getElementById('output').innerText = 'Error: ' + e.message;
+      }
+    }
+
+    document.getElementById('ask').onclick = ()=> callAPI(document.getElementById('q').value,'ask');
+    document.getElementById('summarize').onclick = ()=> callAPI(document.getElementById('q').value,'summarize');
+    document.getElementById('draft').onclick
