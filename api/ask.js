@@ -52,7 +52,7 @@ export default async function handler(req, res) {
     }
 
     const payload = {
-      model: 'gpt-4o-mini',
+      model: 'gpt-4o',
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: userPrompt }
